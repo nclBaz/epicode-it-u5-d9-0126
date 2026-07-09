@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import riccardogulin.u5d9.payloads.ErrorsDTO;
+import riccardogulin.u5d9.payloads.ErrorsWithListDTO;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,12 @@ public class ErrorsHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST) // 400
 	public ErrorsDTO handleBadRequest(BadRequestException ex) {
 		return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+	}
+
+	@ExceptionHandler(ValidationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+	public ErrorsWithListDTO handleValidation(ValidationException ex) {
+		return new ErrorsWithListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrorsList());
 	}
 
 	@ExceptionHandler(NotFoundException.class)

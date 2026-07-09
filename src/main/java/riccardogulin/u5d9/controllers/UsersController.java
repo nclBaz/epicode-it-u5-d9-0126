@@ -3,14 +3,18 @@ package riccardogulin.u5d9.controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import riccardogulin.u5d9.entities.User;
+import riccardogulin.u5d9.exceptions.ValidationException;
 import riccardogulin.u5d9.payloads.PasswordChangeDTO;
 import riccardogulin.u5d9.payloads.UserDTO;
 import riccardogulin.u5d9.payloads.UserResponseDTO;
 import riccardogulin.u5d9.payloads.UserUpdateDTO;
 import riccardogulin.u5d9.services.UsersService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,7 +29,17 @@ public class UsersController {
 	// 1. POST http://locahost:PORT/users (+req.body) --> 201
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED) // 201
-	public UserResponseDTO saveUser(@RequestBody UserDTO body) {
+	public UserResponseDTO saveUser(@RequestBody @Validated UserDTO body, BindingResult validationResult) {
+		if (validationResult.hasErrors()) {
+//			String errors = validationResult.getFieldErrors().stream()
+//					.map(fieldError -> fieldError.getDefaultMessage())
+//					.collect(Collectors.joining(". "));
+//
+//			throw new ValidationException(errors);
+
+			List<String> errorsList = validationResult.getFieldErrors().stream().map(fieldError -> fieldError.getDefaultMessage()).toList();
+			throw new ValidationException(errorsList);
+		}
 		User saved = this.usersService.save(body);
 		return new UserResponseDTO(saved.getUserId());
 	}
