@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import riccardogulin.u5d9.entities.User;
 import riccardogulin.u5d9.exceptions.ValidationException;
 import riccardogulin.u5d9.payloads.PasswordChangeDTO;
@@ -76,6 +77,12 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updatePassword(@PathVariable UUID userId, @RequestBody PasswordChangeDTO body) {
 		this.usersService.updatePassword(userId, body);
+	}
+
+	@PatchMapping("/{userId}/avatar")
+	public void updateAvatar(@PathVariable UUID userId, @RequestParam("profile_picture") MultipartFile file) {
+		// In questo endpoint non si usa JSON ma si attende che arrivino payload in formato multipart/form-data
+		this.usersService.updateAvatar(userId, file);
 
 	}
 
